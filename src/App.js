@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import React, { useState, useEffect } from 'react';
 
+import TodoContainer from './components/TodoContainer';
 import Todo from './components/Todo';
 
 const App = () => {
@@ -12,7 +13,7 @@ const App = () => {
   },[]);
 
   const mostrarTodos = async () => {
-    let todos = await fetch('https://jsonplaceholder.typicode.com/todos').then(response => response.json());
+    let todos = await obtenerLosTodos();
 
     setTodoList([...todos]);
   };
@@ -21,16 +22,21 @@ const App = () => {
     setTodoList([...todoList.map(todo => todo.id === id ? {...todo, completed: !todo.completed} : todo)]);
   };
 
-  const mostrarSoloLosPendientes  = async () => {
-    let todos = await fetch('https://jsonplaceholder.typicode.com/todos').then(response => response.json());
+  const mostrarSoloLosPendientes = async () => {
+    let todos = await obtenerLosTodos();
 
     setTodoList([...todos.filter(todo => !todo.completed)]);
   };
 
   const mostrarSoloLosAcompletados = async () => {
-    let todos = await fetch('https://jsonplaceholder.typicode.com/todos').then(response => response.json());
+    let todos = await obtenerLosTodos();
 
     setTodoList([...todos.filter(todo => todo.completed)]);
+  };
+
+  const obtenerLosTodos = async () => {
+    let todos = await fetch('https://jsonplaceholder.typicode.com/todos').then(response => response.json()); 
+    return todos;
   };
 
   return (
@@ -50,13 +56,13 @@ const App = () => {
                 <div className="collapse navbar-collapse" id="navbarNavDropdown">
                   <ul className="navbar-nav">
                     <li className="nav-item">
-                      <span className="nav-link" onClick={()=>{mostrarTodos()}}>Todos</span>
+                      <span className="nav-link" onClick={()=>{mostrarTodos()}}>Mostrar Todos</span>
                     </li>
                     <li className="nav-item">
-                      <span className="nav-link" onClick={()=> {mostrarSoloLosAcompletados()}}>Acompletados</span>
+                      <span className="nav-link" onClick={()=> {mostrarSoloLosAcompletados()}}>Mostrar Acompletados</span>
                     </li>
                     <li className="nav-item">
-                      <span className="nav-link" onClick={()=> {mostrarSoloLosPendientes()}}>Pendientes</span>
+                      <span className="nav-link" onClick={()=> {mostrarSoloLosPendientes()}}>Mostrar Pendientes</span>
                     </li>
                   </ul>
                 </div>
@@ -65,7 +71,8 @@ const App = () => {
           </header>
         </div>
       </div>
-      <div className="row">
+
+      <TodoContainer>
         {
             todoList.map(todo => {
               return (
@@ -79,7 +86,7 @@ const App = () => {
               );
             })
         }
-      </div>      
+      </TodoContainer>      
     </div>
   );
 }
